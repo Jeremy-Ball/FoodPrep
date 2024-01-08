@@ -1,0 +1,352 @@
+from os import mkdir, listdir
+
+class FoodPrep:
+	
+ def __init__(self, itemList): 
+   self.itemList = itemList
+
+ def main_menu(self):
+  '''method for the main menu'''
+  
+  print("\nWelcome to Jeremy's food prep program!\n")
+  print("Main Menu:\n")
+  print("Option 1: Input items")
+  print("Option 2: Display Input")
+  print("Option 3: Quit\n")
+  
+  #Loop for option input
+  stayInLoop = (True)
+  while (stayInLoop):
+   try: #check if input is a number
+    menuAnswer = int(input("Enter an option: "))
+    if menuAnswer == 1:
+     foodprep.option_1()
+    elif menuAnswer == 2:
+     foodprep.option_2()
+    elif menuAnswer == 3:
+     print("\nEnding the program.")
+     exit()
+    else:
+     print("\nNot a valid option.\n")
+   except ValueError:
+    print("\nNot a valid option.\n")
+
+#----------------------------------------
+
+ def makeFile(self, itemList):
+    
+   #create the directory
+  try: 
+   path = ("./months" + itemList[0] + ".csv")
+   mkdir(path) 
+  except FileExistsError:
+   print("")
+
+#----------------------------------------    
+            
+ def findMonth(self):
+  
+  #dictionary to hold months in order
+  monthOrder = {1 : "January", 2 : "February", 3 : "March", 4 : "April", 5 : "May", 6 : "June", 7 : "July", 8 :"August", 9 : "September", 10: "October", 11 : "November", 12 : "December"}
+  
+  #empty list to collect months with entries
+  monthKey = {}
+  monthDict = {}
+  
+  print("")
+  
+  #create a list of file direstories in 'months'
+  monthFiles = listdir("./months")
+  monthFiles.remove("mod.csv")
+  
+  #fill monthList with months containing entries
+  x = 0
+  for month in monthFiles:
+   month = monthFiles[x].title()
+   month = month.replace(".Csv", "")
+   monthDict[x + 1] = month
+   x += 1
+  
+  #print months in order and create a dictionary to pull the values
+  x = 0
+  for month in monthOrder.values():
+   if month in monthDict.values():
+    print(str(x + 1)+ ". " +str(month.title()))
+    monthKey[x+1] = month
+    x += 1
+   else:
+    x += 0
+               
+  #Loop for month input
+  stayInLoop = (True)
+  while (stayInLoop):
+   
+   try: #check if input is a number
+    monthInput = int(input("\nSelect a month using corresponding number: "))
+    if monthInput in monthKey:
+     return monthKey[monthInput]
+    else:
+     print("\nInvalid input.")
+   except ValueError:
+    print("\nInput must be a number.")
+    
+#-----------------------------
+
+ def findDay(self, month):
+  
+  #empty dictionary to collect days
+  dayDict = {}
+  print("")
+  
+  #print each day in the month file
+  month = ("months/" + month.lower() + ".csv")
+  with open(month, "r") as file:
+    x = 1
+    for line in file:
+     line = line.strip()
+     line = line.split(",")
+     dayDict[x] = line[1]
+     print(str(x) + ". " + str(dayDict[x]))
+     x += 1
+  
+  #loop for day input  
+  stayInLoop = (True)
+  while (stayInLoop):
+   try: #check if input is a number
+    dayInput = int(input("\nSelect a month using corresponding number: "))
+    if dayInput in dayDict:
+     return dayDict[dayInput]
+    else:
+     print("\nInvalid input.")
+   except ValueError:
+    print("\nInput must be a number.")
+
+#-----------------------------------
+
+ def findInputList(self, month, day):
+  
+  #create an object for the file name
+  monthFile = ("months/" + month.lower() + ".csv")
+  
+  #open the file and make each line a list
+  with open(monthFile, "r") as file:
+   for line in file:
+    line = line.strip()
+    line = line.split(",")
+    
+    #return the list the user is looking for
+    if month == line[0] and day == line[1]:
+     return(line)  
+      
+#------------------------------
+    
+ def writeFile(self, itemList):
+  """Method that writes the input to a csv file"""
+  
+  #creates a file for the month
+  file = (itemList[0].lower() + ".csv")
+   
+  #appends the file
+  with open( "months/" + file, "a") as csvFile:
+   str1 = (",") # adds comma between values when converting a list to a string
+   str1 = str1.join(itemList) #convert list to string
+   str1 = (str1)+("\n")
+   csvFile.write(str1)
+  
+#-----------------------------------
+
+ def display_entry(self, inputList):
+  
+  #Prints the top of the sheet with date
+  print("\n")
+  print(inputList[0].strip(",")+" "+inputList[1].strip(",")+"\n\n Item Cost\n--------------------------")
+  
+  #Writes the item and cost
+  total = [] #empty list to calculate total
+  i = 2 #variable to loop iterate through list length
+  x = 0 #variable to iterate through items
+  y = 0 #variable to iterate through cost
+  while i < len(inputList) :
+   print(" " + inputList[x + 2].strip(",") .ljust(10)+ " " + "$" + inputList[y + 3].strip(",") + "\n")
+   
+   #appends the costs to the total list
+   total.append(inputList[y + 3])
+   i += 2
+   x += 2
+   y += 2
+	
+  #turn "total" items to integers for addition
+  for a in range (0, len(total)):
+   total[a] = float(total[a])
+    
+  total = sum(total) #add the total
+  total = "${:,.2f}".format(total) #formats for currency
+  print("Total: " + str(total))
+  print("\n\n")
+  
+  #loop to ask user if they want to exit
+  stayInLoop = (True)
+  while (stayInLoop):
+   try: #check if input is a number
+    newEntry = int(input("Enter 1 to display a new sheet or 2 to return to the main menu: "))
+    if newEntry == 1:
+     foodprep.option_2()
+    elif newEntry == 2:
+     foodprep.main_menu()
+    else:
+     print("\nNot a valid option")
+   except ValueError:
+    print("\nNot a valid option")  
+    
+#--------------------------------------
+
+ def validateDay(self):
+  '''method to validate day input'''
+  
+  stayInLoop = (True)
+  while (stayInLoop):
+   dayInput = input("Enter a day in two digit format: ")
+   
+   if dayInput != "00":
+    if dayInput.isnumeric() == True:
+     if len(dayInput) == 2:  
+      if int(dayInput) <= 31:
+           return dayInput
+      else:
+       print("\nInvalid input\n")
+     else:
+      print("\nInput needs to be in 2 digit format\n")
+    else:
+     print("\nInvalid input\n")
+   else:
+    print("\nInvalid input\n")
+
+#----------------------------------------------------,-
+
+ def validateMonth(self):
+  '''method to validate month input'''
+  
+  monthList = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+  
+  stayInLoop = (True)
+  while (stayInLoop):
+   monthInput = input("\nEnter a month in two digit format: ")
+   
+   if monthInput != "00":
+    if monthInput.isnumeric() == True:
+     if len(monthInput) == 2:
+      if int(monthInput) <= 12:
+       
+  #changes the monthInput to an integer for list comprehension
+       monthInput = int(monthInput)
+       monthInput = monthList[monthInput - 1]
+       return monthInput
+      else:
+       print("\nInvalid input")
+     else:
+      print("\nInput needs to be in 2 digit format")
+    else:
+     print("\nInvalid input")
+   else:
+    print("\nInvalid input")
+	
+#-------------------------------------------
+
+ def validateItem(self):
+  '''method to validate item input'''
+    
+  stayInLoop = True
+  while (stayInLoop):
+   itemInput = input("\nEnter an item: ")
+   
+   if itemInput != (""):
+    if itemInput.isalnum() == True:
+     if len(itemInput) <= 15:
+      return itemInput
+     else:
+      print("\nItem may not be more than 15 characters\n")
+    else:
+     print("\nSpecial characters not allowed\n")
+   else:
+    print("Invalid input")
+
+#----------------------------------------------------------
+
+ def validateCost(self):
+  '''method to validate cost input'''
+  
+  stayInLoop = (True)
+  while (stayInLoop):
+   costInput = input("Enter the cost: ")
+   costInput = costInput.replace("$","")
+   costInput = str(costInput.strip())
+   
+   try: #check if input is a number
+    costInput = float(costInput)
+    if len(str(costInput)) < 10:
+     costInput = "{:,.2f}".format(costInput)
+     return costInput
+    else:
+     print("\nLength of cost is too long\n")
+   except ValueError:
+    print("\nCost needs to be numbers only\n") 
+    
+#---------------------------------
+   
+ def option_1(self):
+  '''method for main menu option 1'''
+  
+  itemList = [] #clear the itemList for new entry
+  monthInput = foodprep.validateMonth()
+  dayInput = foodprep.validateDay()
+  itemList.append(monthInput)
+  itemList.append(dayInput)
+  
+  #Loop for entering items and their cost
+  stayInLoop = (True)
+  while (stayInLoop):
+   itemInput = foodprep.validateItem()
+   itemList.append(itemInput)  
+   costInput = foodprep.validateCost()
+   itemList.append(costInput)
+   
+  #Loop to check if the user would like to enter new input
+   stayInLoop2 = (True)
+   while (stayInLoop2):
+    try:
+     newItem = int(input("\nEnter 1 to input new item, 2 to display input, or 3 to save input and return to main menu. "))
+     if newItem == 1:
+      stayInLoop2 = (False)
+     elif newItem == 2:
+      print("\n" + str(itemList))
+     elif newItem == 3:
+      foodprep.makeFile(itemList)
+      foodprep.writeFile(itemList)
+      foodprep.main_menu()
+     else:
+      print("\nNot a valid option")
+    except ValueError:
+     print("\nNot a valid input.")
+
+#-----------------------------------------------
+
+ def option_2(self):
+  '''method for main menu option 2'''
+  
+  #find the month
+  month = foodprep.findMonth()
+  
+  #find the day
+  day = foodprep.findDay(month)
+  
+  #find the user input in the file
+  inputList = foodprep.findInputList(month, day)
+  
+  #display the user input from the file
+  foodprep.display_entry(inputList)
+  
+#--------------------------------------------   
+  
+if (__name__ == "__main__"):
+ foodprep = FoodPrep(itemList = [])
+ foodprep.main_menu()
