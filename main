@@ -368,7 +368,6 @@ class FoodPrep:
 	    
 	    #create month directory
         month = (inputList[0].lower() + ".csv")
-        print(inputList)
 	    
 	    #open the month and mod file
         with open("months/" + month, "r+") as file:
@@ -377,7 +376,6 @@ class FoodPrep:
              #iterate through each line in file
 	            for line in file:
 	                line = line.split(",")
-	                print(line)
 	                
 	                #check if line is what user entered
 	                if line[0] == inputList[0] and line[1] != inputList[1]:
